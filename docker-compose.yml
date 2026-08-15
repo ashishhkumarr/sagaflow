@@ -20,6 +20,10 @@ services:
       KAFKA_TRANSACTION_STATE_LOG_REPLICATION_FACTOR: 1
       KAFKA_TRANSACTION_STATE_LOG_MIN_ISR: 1
       KAFKA_GROUP_INITIAL_REBALANCE_DELAY_MS: 0
+      # default is /tmp/kafka-logs which gets thrown away with the container
+      KAFKA_LOG_DIRS: /var/lib/kafka/data
+    volumes:
+      - kafka-data:/var/lib/kafka/data
 
   order-db:
     image: postgres:16
@@ -34,4 +38,5 @@ services:
       - order-data:/var/lib/postgresql/data
 
 volumes:
+  kafka-data:
   order-data:
