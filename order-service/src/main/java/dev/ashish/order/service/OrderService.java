@@ -1,7 +1,9 @@
 package dev.ashish.order.service;
 
+import dev.ashish.contracts.OrderCreated;
 import dev.ashish.order.domain.Order;
 import dev.ashish.order.domain.OrderRepository;
+import dev.ashish.order.messaging.OrderEventPublisher;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -18,14 +20,21 @@ public class OrderService {
 
 	private final OrderRepository orders;
 
-	public OrderService(OrderRepository orders) {
+	private final OrderEventPublisher publisher;
+
+	public OrderService(OrderRepository orders, OrderEventPublisher publisher) {
 		this.orders = orders;
+		this.publisher = publisher;
 	}
 
 	@Transactional
 	public Order placeOrder(String customerId, String item, int quantity, BigDecimal amount) {
 		Order order = orders.save(new Order(customerId, item, quantity, amount));
 		log.info("saved order {} for customer {}", order.getId(), customerId);
+
+		publisher.orderCreated(OrderCreated.of(order.getId(), order.getCustomerId(),
+				order.getItem(), order.getQuantity(), order.getAmount()));
+
 		return order;
 	}
 
