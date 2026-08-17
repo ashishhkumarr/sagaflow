@@ -13,6 +13,14 @@ spring:
     hibernate:
       ddl-auto: validate
     open-in-view: false
+  kafka:
+    bootstrap-servers: localhost:9092
+    producer:
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.springframework.kafka.support.serializer.JacksonJsonSerializer
+      properties:
+        # consumers say what type they want, so no need to stamp the java class name on the message
+        spring.json.add.type.headers: false
 
 management:
   endpoints:
