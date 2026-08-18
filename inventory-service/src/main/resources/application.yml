@@ -1,0 +1,32 @@
+server:
+  port: 8082
+
+spring:
+  application:
+    name: inventory-service
+  datasource:
+    url: jdbc:postgresql://localhost:5433/inventory_db
+    username: postgres
+    password: postgres
+  jpa:
+    hibernate:
+      ddl-auto: validate
+    open-in-view: false
+  kafka:
+    bootstrap-servers: localhost:9092
+    consumer:
+      group-id: inventory-service
+      auto-offset-reset: earliest
+      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      value-deserializer: org.springframework.kafka.support.serializer.JacksonJsonDeserializer
+      properties:
+        # the producer does not send type headers so the type has to be named here
+        spring.json.use.type.headers: false
+        spring.json.value.default.type: dev.ashish.contracts.OrderCreated
+        spring.json.trusted.packages: dev.ashish.contracts
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health
