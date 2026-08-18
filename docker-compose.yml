@@ -37,6 +37,19 @@ services:
     volumes:
       - order-data:/var/lib/postgresql/data
 
+  inventory-db:
+    image: postgres:16
+    container_name: inventory-db
+    ports:
+      - "5433:5432"
+    environment:
+      POSTGRES_DB: inventory_db
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    volumes:
+      - inventory-data:/var/lib/postgresql/data
+
 volumes:
   kafka-data:
   order-data:
+  inventory-data:
