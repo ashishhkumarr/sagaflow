@@ -12,6 +12,12 @@
 	<artifactId>contracts</artifactId>
 	<name>contracts</name>
 
-	<!-- just the event records, every service depends on this so it stays dependency free -->
+	<dependencies>
+		<!-- annotations only, needed so the events can say what type they are in the json -->
+		<dependency>
+			<groupId>com.fasterxml.jackson.core</groupId>
+			<artifactId>jackson-annotations</artifactId>
+		</dependency>
+	</dependencies>
 
 </project>
