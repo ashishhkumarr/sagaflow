@@ -20,10 +20,16 @@ spring:
       key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
       value-deserializer: org.springframework.kafka.support.serializer.JacksonJsonDeserializer
       properties:
-        # the producer does not send type headers so the type has to be named here
+        # the producer does not send type headers so the type has to be named here.
+        # OrderEvent is the interface, jackson picks the real one off the "type" field
         spring.json.use.type.headers: false
-        spring.json.value.default.type: dev.ashish.contracts.OrderCreated
+        spring.json.value.default.type: dev.ashish.contracts.OrderEvent
         spring.json.trusted.packages: dev.ashish.contracts
+    producer:
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.springframework.kafka.support.serializer.JacksonJsonSerializer
+      properties:
+        spring.json.add.type.headers: false
 
 management:
   endpoints:

@@ -1,21 +1,26 @@
 package dev.ashish.inventory.messaging;
 
 import dev.ashish.contracts.OrderCreated;
+import dev.ashish.contracts.OrderEvent;
 import dev.ashish.contracts.Topics;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import dev.ashish.inventory.service.InventoryService;
 import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.stereotype.Component;
 
 @Component
 public class OrderCreatedListener {
 
-	private static final Logger log = LoggerFactory.getLogger(OrderCreatedListener.class);
+	private final InventoryService inventory;
+
+	public OrderCreatedListener(InventoryService inventory) {
+		this.inventory = inventory;
+	}
 
 	@KafkaListener(topics = Topics.ORDER_EVENTS)
-	public void onOrderCreated(OrderCreated event) {
-		log.info("heard about order {}: {} x{} for {}",
-				event.orderId(), event.item(), event.quantity(), event.customerId());
+	public void onOrderEvent(OrderEvent event) {
+		if (event instanceof OrderCreated created) {
+			inventory.reserve(created);
+		}
 	}
 
 }
