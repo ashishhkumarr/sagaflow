@@ -49,7 +49,10 @@ public class InventoryService {
 
 		reservations.save(new Reservation(event.orderId(), event.item(), event.quantity()));
 		log.info("reserved {} x{} for order {}", event.item(), event.quantity(), event.orderId());
-		publisher.publish(StockReserved.of(event.orderId(), event.item(), event.quantity()));
+		// the customer and amount are passed along so payment does not have to call
+		// back into the order service to find out what to charge
+		publisher.publish(StockReserved.of(event.orderId(), event.customerId(),
+				event.item(), event.quantity(), event.amount()));
 	}
 
 }
