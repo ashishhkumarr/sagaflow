@@ -17,9 +17,13 @@ spring:
     consumer:
       group-id: payment-service
       auto-offset-reset: earliest
-      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
-      value-deserializer: org.springframework.kafka.support.serializer.JacksonJsonDeserializer
+      key-deserializer: org.springframework.kafka.support.serializer.ErrorHandlingDeserializer
+      value-deserializer: org.springframework.kafka.support.serializer.ErrorHandlingDeserializer
       properties:
+        # a message we cannot parse gets logged and skipped. without this the consumer
+        # retries the same bad message forever and nothing behind it ever gets read
+        spring.deserializer.key.delegate.class: org.apache.kafka.common.serialization.StringDeserializer
+        spring.deserializer.value.delegate.class: org.springframework.kafka.support.serializer.JacksonJsonDeserializer
         spring.json.use.type.headers: false
         spring.json.value.default.type: dev.ashish.contracts.InventoryEvent
         spring.json.trusted.packages: dev.ashish.contracts
