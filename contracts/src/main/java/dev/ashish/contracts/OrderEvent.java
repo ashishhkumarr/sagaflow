@@ -9,9 +9,11 @@ import java.util.UUID;
 // kind of event and the consumer still knows what it is reading
 @JsonTypeInfo(use = JsonTypeInfo.Id.NAME, property = "type")
 @JsonSubTypes({
-		@JsonSubTypes.Type(value = OrderCreated.class, name = "order-created")
+		@JsonSubTypes.Type(value = OrderCreated.class, name = "order-created"),
+		@JsonSubTypes.Type(value = OrderConfirmed.class, name = "order-confirmed"),
+		@JsonSubTypes.Type(value = OrderCancelled.class, name = "order-cancelled")
 })
-public sealed interface OrderEvent permits OrderCreated {
+public sealed interface OrderEvent permits OrderCreated, OrderConfirmed, OrderCancelled {
 
 	UUID orderId();
 
