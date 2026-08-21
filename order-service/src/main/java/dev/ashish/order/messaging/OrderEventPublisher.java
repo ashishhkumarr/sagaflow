@@ -1,6 +1,6 @@
 package dev.ashish.order.messaging;
 
-import dev.ashish.contracts.OrderCreated;
+import dev.ashish.contracts.OrderEvent;
 import dev.ashish.contracts.Topics;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -18,11 +18,11 @@ public class OrderEventPublisher {
 		this.kafka = kafka;
 	}
 
-	public void orderCreated(OrderCreated event) {
+	public void publish(OrderEvent event) {
 		// keyed on the order id so all the events for one order go to the same
 		// partition, otherwise they can get processed out of order
 		kafka.send(Topics.ORDER_EVENTS, event.orderId().toString(), event);
-		log.info("published order created for {}", event.orderId());
+		log.info("published {} for order {}", event.getClass().getSimpleName(), event.orderId());
 	}
 
 }
