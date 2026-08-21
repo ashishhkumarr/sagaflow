@@ -5,6 +5,17 @@ payment, notification), each with its own Postgres database, talking to each oth
 
 Still building this, notes here will grow as I go.
 
+## what happens when an order comes in
+
+1. order service saves the order as NEW and publishes `order-created`
+2. inventory service reserves the stock, publishes `stock-reserved` or `stock-rejected`
+3. payment service charges the card, publishes `payment-succeeded` or `payment-failed`
+4. order service listens to both and moves the order to CONFIRMED or CANCELLED
+5. notification service sees the ending and writes the email it would have sent
+
+Nothing calls anything else over http, it is all events. Each service only knows about
+its own database.
+
 ## running it
 
 Needs Docker and Java 21.
@@ -13,13 +24,18 @@ Needs Docker and Java 21.
 docker compose up -d
 ```
 
-Kafka ends up on `localhost:9092` and the order database on `localhost:5432`.
-
-Then start the order service, it runs on 8081.
+That brings up Kafka on 9092 and one Postgres per service (5432 order, 5433 inventory,
+5434 payment). Then build and start the four services:
 
 ```
-./mvnw -pl order-service spring-boot:run
+./mvnw clean package
+java -jar order-service/target/order-service-0.0.1-SNAPSHOT.jar
+java -jar inventory-service/target/inventory-service-0.0.1-SNAPSHOT.jar
+java -jar payment-service/target/payment-service-0.0.1-SNAPSHOT.jar
+java -jar notification-service/target/notification-service-0.0.1-SNAPSHOT.jar
 ```
+
+They run on 8081 to 8084.
 
 ## placing an order
 
@@ -30,4 +46,9 @@ curl -X POST http://localhost:8081/orders \
 ```
 
 That gives back the new order with its id, and you can read it back with
-`curl http://localhost:8081/orders/<id>`.
+`curl http://localhost:8081/orders/<id>`. Give it a second and the status will have
+moved off NEW.
+
+Stock starts at red shoe 10, green hat 5, blue shirt 3, black jacket 1, so ordering more
+than that gets rejected. Payments over 500 get declined, and so does any customer id
+starting with `fail-`, which is handy for testing the unhappy paths.
