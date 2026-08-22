@@ -32,6 +32,7 @@ spring:
       value-serializer: org.springframework.kafka.support.serializer.JacksonJsonSerializer
       properties:
         spring.json.add.type.headers: false
+        interceptor.classes: dev.ashish.common.CorrelationProducerInterceptor
 
 # there is no real card processor here, this is the rule the fake one uses to
 # decide. keeping it in config so tests can turn failures on and off
@@ -43,3 +44,10 @@ management:
     web:
       exposure:
         include: health
+
+logging:
+  pattern:
+    level: "%5p [%X{correlationId:-}]"
+  level:
+    # the kafka client logs its whole config every time it connects, too noisy
+    org.apache.kafka: warn

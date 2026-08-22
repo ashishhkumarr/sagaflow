@@ -33,9 +33,17 @@ spring:
       properties:
         # consumers say what type they want, so no need to stamp the java class name on the message
         spring.json.add.type.headers: false
+        interceptor.classes: dev.ashish.common.CorrelationProducerInterceptor
 
 management:
   endpoints:
     web:
       exposure:
         include: health
+
+logging:
+  pattern:
+    level: "%5p [%X{correlationId:-}]"
+  level:
+    # the kafka client logs its whole config every time it connects, too noisy
+    org.apache.kafka: warn

@@ -34,9 +34,17 @@ spring:
       value-serializer: org.springframework.kafka.support.serializer.JacksonJsonSerializer
       properties:
         spring.json.add.type.headers: false
+        interceptor.classes: dev.ashish.common.CorrelationProducerInterceptor
 
 management:
   endpoints:
     web:
       exposure:
         include: health
+
+logging:
+  pattern:
+    level: "%5p [%X{correlationId:-}]"
+  level:
+    # the kafka client logs its whole config every time it connects, too noisy
+    org.apache.kafka: warn

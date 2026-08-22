@@ -25,3 +25,10 @@ management:
     web:
       exposure:
         include: health
+
+logging:
+  pattern:
+    level: "%5p [%X{correlationId:-}]"
+  level:
+    # the kafka client logs its whole config every time it connects, too noisy
+    org.apache.kafka: warn
