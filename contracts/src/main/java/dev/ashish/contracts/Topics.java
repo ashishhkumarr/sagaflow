@@ -8,6 +8,10 @@ public final class Topics {
 
 	public static final String PAYMENT_EVENTS = "payment.events";
 
+	public static final String INVENTORY_COMMANDS = "inventory.commands";
+
+	public static final String PAYMENT_COMMANDS = "payment.commands";
+
 	private Topics() {
 	}
 
