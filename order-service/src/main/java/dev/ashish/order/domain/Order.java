@@ -28,7 +28,11 @@ public class Order {
 	@Enumerated(EnumType.STRING)
 	private OrderStatus status;
 
+	private String cancelReason;
+
 	private Instant createdAt;
+
+	private Instant updatedAt;
 
 	// jpa needs this
 	protected Order() {
@@ -42,6 +46,22 @@ public class Order {
 		this.amount = amount;
 		this.status = OrderStatus.NEW;
 		this.createdAt = Instant.now();
+		this.updatedAt = this.createdAt;
+	}
+
+	// the only way the status is allowed to change. everything that wants to move an
+	// order goes through here so the rules cannot be worked around by accident
+	public void moveTo(OrderStatus next) {
+		if (!status.canMoveTo(next)) {
+			throw new InvalidTransition(id, status, next);
+		}
+		this.status = next;
+		this.updatedAt = Instant.now();
+	}
+
+	public void cancel(String reason) {
+		moveTo(OrderStatus.CANCELLED);
+		this.cancelReason = reason;
 	}
 
 	public UUID getId() {
@@ -68,12 +88,16 @@ public class Order {
 		return status;
 	}
 
-	public void setStatus(OrderStatus status) {
-		this.status = status;
+	public String getCancelReason() {
+		return cancelReason;
 	}
 
 	public Instant getCreatedAt() {
 		return createdAt;
+	}
+
+	public Instant getUpdatedAt() {
+		return updatedAt;
 	}
 
 }
