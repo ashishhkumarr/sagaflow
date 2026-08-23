@@ -21,8 +21,8 @@ spring:
       key-deserializer: org.springframework.kafka.support.serializer.ErrorHandlingDeserializer
       value-deserializer: org.springframework.kafka.support.serializer.ErrorHandlingDeserializer
       properties:
-        # a message we cannot parse gets logged and skipped. without this the consumer
-        # retries the same bad message forever and nothing behind it ever gets read
+        # a message that will not parse gets skipped instead of retried forever,
+        # which would block everything behind it
         spring.deserializer.key.delegate.class: org.apache.kafka.common.serialization.StringDeserializer
         spring.deserializer.value.delegate.class: org.springframework.kafka.support.serializer.JacksonJsonDeserializer
         spring.json.use.type.headers: false

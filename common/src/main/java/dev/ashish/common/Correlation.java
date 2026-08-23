@@ -4,9 +4,7 @@ import org.slf4j.MDC;
 
 import java.util.UUID;
 
-// one id that follows an order through all four services so the logs can be
-// tied together. it lives in MDC which is a per thread map slf4j keeps, and the
-// log pattern reads it out on every line
+// one id that follows an order across all four services so the logs line up
 public final class Correlation {
 
 	public static final String HEADER = "correlation-id";

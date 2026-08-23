@@ -12,8 +12,8 @@ import org.springframework.stereotype.Component;
 
 import java.io.IOException;
 
-// the id starts here, this is the only way into the system from outside. if the
-// caller sent one we keep it, otherwise we make one up
+// id starts here since this is the only way in from outside. a caller supplied one
+// is kept, otherwise a new one gets made
 @Component
 public class CorrelationFilter implements Filter {
 

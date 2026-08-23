@@ -7,8 +7,7 @@ import org.springframework.kafka.listener.RecordInterceptor;
 @Configuration
 public class CorrelationConfig {
 
-	// spring boot picks a RecordInterceptor bean up on its own and hands it to the
-	// listener container factory, so this is all the wiring the consumer side needs
+	// boot finds a RecordInterceptor bean by itself, no other wiring needed
 	@Bean
 	RecordInterceptor<Object, Object> correlationRecordInterceptor() {
 		return new CorrelationRecordInterceptor();

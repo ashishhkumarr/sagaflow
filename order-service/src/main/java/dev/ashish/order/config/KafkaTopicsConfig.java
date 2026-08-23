@@ -9,8 +9,7 @@ import org.springframework.kafka.config.TopicBuilder;
 @Configuration
 public class KafkaTopicsConfig {
 
-	// kafka would auto create this but then the partition count is whatever the broker
-	// defaults to, so declaring it here keeps it the same everywhere
+	// auto create would leave the partition count up to the broker default
 	@Bean
 	NewTopic orderEvents() {
 		return TopicBuilder.name(Topics.ORDER_EVENTS)
@@ -19,7 +18,6 @@ public class KafkaTopicsConfig {
 				.build();
 	}
 
-	// the saga owns both command topics because it is the only thing that sends on them
 	@Bean
 	NewTopic inventoryCommands() {
 		return TopicBuilder.name(Topics.INVENTORY_COMMANDS)

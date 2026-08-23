@@ -19,8 +19,7 @@ public class OrderOutcomeListener {
 
 	@KafkaListener(topics = Topics.ORDER_EVENTS)
 	public void onOrderEvent(OrderEvent event) {
-		// order created is on this topic too but there is nothing to tell the customer
-		// yet at that point, so only the two endings are handled
+		// order created is on this topic too but there is nothing to email about yet
 		if (event instanceof OrderConfirmed confirmed) {
 			mailer.orderConfirmed(confirmed);
 		}

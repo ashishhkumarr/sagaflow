@@ -5,8 +5,7 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo;
 
 import java.util.UUID;
 
-// every event carries a "type" field in the json so one topic can hold more than one
-// kind of event and the consumer still knows what it is reading
+// the "type" field lets one topic carry more than one kind of event
 @JsonTypeInfo(use = JsonTypeInfo.Id.NAME, property = "type")
 @JsonSubTypes({
 		@JsonSubTypes.Type(value = OrderCreated.class, name = "order-created"),

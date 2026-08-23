@@ -20,12 +20,12 @@ spring:
       key-deserializer: org.springframework.kafka.support.serializer.ErrorHandlingDeserializer
       value-deserializer: org.springframework.kafka.support.serializer.ErrorHandlingDeserializer
       properties:
-        # a message we cannot parse gets logged and skipped. without this the consumer
-        # retries the same bad message forever and nothing behind it ever gets read
+        # a message that will not parse gets skipped instead of retried forever,
+        # which would block everything behind it
         spring.deserializer.key.delegate.class: org.apache.kafka.common.serialization.StringDeserializer
         spring.deserializer.value.delegate.class: org.springframework.kafka.support.serializer.JacksonJsonDeserializer
-        # the producer does not send type headers so the type has to be named here.
-        # the interface is named here, jackson picks the real one off the "type" field
+        # no type headers on the wire, so the interface is named here and jackson
+        # works out the real one from the "type" field
         spring.json.use.type.headers: false
         spring.json.value.default.type: dev.ashish.contracts.InventoryCommand
         spring.json.trusted.packages: dev.ashish.contracts

@@ -7,8 +7,8 @@ import org.springframework.data.repository.query.Param;
 
 public interface StockRepository extends JpaRepository<Stock, String> {
 
-	// one statement so two orders for the same item cannot both read the old count
-	// and both think there is enough. returns 0 when there was not enough left
+	// has to be one statement, otherwise two orders read the same count and both think
+	// there is enough. returns 0 when there was not
 	@Modifying
 	@Query("update Stock s set s.available = s.available - :quantity "
 			+ "where s.item = :item and s.available >= :quantity")

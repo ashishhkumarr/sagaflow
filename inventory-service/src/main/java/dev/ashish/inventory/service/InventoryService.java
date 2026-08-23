@@ -32,8 +32,8 @@ public class InventoryService {
 
 	@Transactional
 	public void reserve(ReserveStock command) {
-		// kafka can hand us the same message twice, the reservation row is keyed on the
-		// order id so if it is already there we have done this one before
+		// kafka delivers at least once so the same command can turn up twice. the
+		// reservation is keyed on order id, row already there means it was done
 		if (reservations.existsById(command.orderId())) {
 			log.info("order {} already reserved, skipping", command.orderId());
 			return;

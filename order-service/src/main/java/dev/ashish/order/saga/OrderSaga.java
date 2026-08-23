@@ -19,8 +19,8 @@ import java.util.Optional;
 import java.util.UUID;
 import java.util.function.Consumer;
 
-// runs the order from start to finish. the other services do not talk to each other,
-// they only answer the commands this sends, so the whole flow is readable in one file
+// runs the order start to finish. the other services never talk to each other, they
+// only answer commands from here
 @Service
 public class OrderSaga {
 
@@ -77,12 +77,12 @@ public class OrderSaga {
 				order.getItem(), order.getQuantity(), reason));
 	}
 
-	// every reply goes through here. the order has to exist and the move has to be one
-	// the state machine allows, otherwise it is a duplicate or a late reply and we drop it
+	// every reply lands here. a move the state machine refuses means it is a repeat or
+	// a late reply from a step already past, so it gets dropped
 	private void step(UUID orderId, Consumer<Order> change) {
 		Optional<Order> found = orders.findById(orderId);
 		if (found.isEmpty()) {
-			log.warn("reply for order {} which is not in our db", orderId);
+			log.warn("got a reply for order {} which is not in the db", orderId);
 			return;
 		}
 

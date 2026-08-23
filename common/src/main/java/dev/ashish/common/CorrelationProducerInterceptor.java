@@ -7,8 +7,8 @@ import org.apache.kafka.clients.producer.RecordMetadata;
 import java.nio.charset.StandardCharsets;
 import java.util.Map;
 
-// the other half, stamps whatever id this thread is carrying onto every message
-// going out. kafka builds this one itself so it needs a plain no arg constructor
+// stamps the current id onto outgoing messages. kafka news this up itself so it
+// needs a no arg constructor
 public class CorrelationProducerInterceptor implements ProducerInterceptor<Object, Object> {
 
 	@Override

@@ -12,8 +12,8 @@ public enum OrderStatus {
 	CONFIRMED,
 	CANCELLED;
 
-	// the whole saga in one place. if a move is not in here it is not allowed, which
-	// means a repeated or out of order reply gets turned away instead of half applying
+	// the whole saga in one place. a move that is not listed is not allowed, which is
+	// what turns away repeat and out of order replies
 	private static final Map<OrderStatus, Set<OrderStatus>> ALLOWED = Map.of(
 			NEW, EnumSet.of(AWAITING_STOCK),
 			AWAITING_STOCK, EnumSet.of(AWAITING_PAYMENT, CANCELLED),

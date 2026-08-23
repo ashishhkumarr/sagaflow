@@ -8,8 +8,7 @@ import org.springframework.kafka.listener.RecordInterceptor;
 import java.nio.charset.StandardCharsets;
 import java.util.UUID;
 
-// runs before every consumed record, pulls the id off the kafka header and puts it
-// in MDC so anything the listener logs is tagged with it
+// pulls the id off the kafka header into MDC before the listener runs
 public class CorrelationRecordInterceptor implements RecordInterceptor<Object, Object> {
 
 	@Override
@@ -27,8 +26,7 @@ public class CorrelationRecordInterceptor implements RecordInterceptor<Object, O
 
 	@Override
 	public void afterRecord(ConsumerRecord<Object, Object> record, Consumer<Object, Object> consumer) {
-		// consumer threads get reused, leaving the old id behind would tag the next
-		// message with the wrong order
+		// threads get reused, an old id left here would tag the next message wrong
 		Correlation.clear();
 	}
 

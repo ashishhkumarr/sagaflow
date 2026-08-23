@@ -36,8 +36,7 @@ public class OrderService {
 		Order order = orders.save(new Order(customerId, item, quantity, amount));
 		log.info("saved order {} for customer {}", order.getId(), customerId);
 
-		// this one is a plain announcement for anyone who cares, the actual work is
-		// kicked off by the saga below
+		// just an announcement, the real work starts in the saga below
 		publisher.publish(OrderCreated.of(order.getId(), order.getCustomerId(),
 				order.getItem(), order.getQuantity(), order.getAmount()));
 

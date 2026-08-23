@@ -5,8 +5,8 @@ import org.springframework.stereotype.Component;
 
 import java.math.BigDecimal;
 
-// stands in for a real card processor. the rules are deliberately boring and
-// predictable so a test can decide up front whether a charge should fail
+// stands in for a real card processor. rules are predictable on purpose so a test
+// can decide up front whether a charge fails
 @Component
 public class FakeCardGateway {
 

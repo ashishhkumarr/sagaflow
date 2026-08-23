@@ -49,8 +49,7 @@ public class Order {
 		this.updatedAt = this.createdAt;
 	}
 
-	// the only way the status is allowed to change. everything that wants to move an
-	// order goes through here so the rules cannot be worked around by accident
+	// only way the status changes, so the rules cannot be skipped by accident
 	public void moveTo(OrderStatus next) {
 		if (!status.canMoveTo(next)) {
 			throw new InvalidTransition(id, status, next);

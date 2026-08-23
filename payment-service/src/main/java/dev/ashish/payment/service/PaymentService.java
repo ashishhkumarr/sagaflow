@@ -30,8 +30,8 @@ public class PaymentService {
 
 	@Transactional
 	public void pay(ProcessPayment command) {
-		// order id is the primary key on payments, so if a row is already there this
-		// message has been through here before and the card must not be charged again
+		// order id is the primary key, a row already there means this was done before.
+		// must not charge twice
 		if (payments.existsById(command.orderId())) {
 			log.info("order {} already paid for, skipping", command.orderId());
 			return;
