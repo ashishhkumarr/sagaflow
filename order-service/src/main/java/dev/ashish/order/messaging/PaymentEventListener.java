@@ -4,27 +4,25 @@ import dev.ashish.contracts.PaymentEvent;
 import dev.ashish.contracts.PaymentFailed;
 import dev.ashish.contracts.PaymentSucceeded;
 import dev.ashish.contracts.Topics;
-import dev.ashish.order.service.OrderService;
+import dev.ashish.order.saga.OrderSaga;
 import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.stereotype.Component;
 
 @Component
 public class PaymentEventListener {
 
-	private final OrderService orderService;
+	private final OrderSaga saga;
 
-	public PaymentEventListener(OrderService orderService) {
-		this.orderService = orderService;
+	public PaymentEventListener(OrderSaga saga) {
+		this.saga = saga;
 	}
 
 	@KafkaListener(topics = Topics.PAYMENT_EVENTS,
 			properties = "spring.json.value.default.type=dev.ashish.contracts.PaymentEvent")
 	public void onPaymentEvent(PaymentEvent event) {
-		if (event instanceof PaymentSucceeded succeeded) {
-			orderService.confirm(succeeded.orderId());
-		}
-		else if (event instanceof PaymentFailed failed) {
-			orderService.cancel(failed.orderId(), failed.reason());
+		switch (event) {
+			case PaymentSucceeded succeeded -> saga.onPaymentSucceeded(succeeded.orderId());
+			case PaymentFailed failed -> saga.onPaymentFailed(failed.orderId(), failed.reason());
 		}
 	}
 

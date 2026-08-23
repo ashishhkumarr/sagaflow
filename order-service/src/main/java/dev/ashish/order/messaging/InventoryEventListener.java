@@ -2,18 +2,19 @@ package dev.ashish.order.messaging;
 
 import dev.ashish.contracts.InventoryEvent;
 import dev.ashish.contracts.StockRejected;
+import dev.ashish.contracts.StockReserved;
 import dev.ashish.contracts.Topics;
-import dev.ashish.order.service.OrderService;
+import dev.ashish.order.saga.OrderSaga;
 import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.stereotype.Component;
 
 @Component
 public class InventoryEventListener {
 
-	private final OrderService orderService;
+	private final OrderSaga saga;
 
-	public InventoryEventListener(OrderService orderService) {
-		this.orderService = orderService;
+	public InventoryEventListener(OrderSaga saga) {
+		this.saga = saga;
 	}
 
 	// this service reads two topics that carry different event types, so the type has
@@ -21,9 +22,9 @@ public class InventoryEventListener {
 	@KafkaListener(topics = Topics.INVENTORY_EVENTS,
 			properties = "spring.json.value.default.type=dev.ashish.contracts.InventoryEvent")
 	public void onInventoryEvent(InventoryEvent event) {
-		// a reservation going through is not the end of the story, we wait for payment
-		if (event instanceof StockRejected rejected) {
-			orderService.cancel(rejected.orderId(), rejected.reason());
+		switch (event) {
+			case StockReserved reserved -> saga.onStockReserved(reserved.orderId());
+			case StockRejected rejected -> saga.onStockRejected(rejected.orderId(), rejected.reason());
 		}
 	}
 
