@@ -19,4 +19,21 @@ public class KafkaTopicsConfig {
 				.build();
 	}
 
+	// the saga owns both command topics because it is the only thing that sends on them
+	@Bean
+	NewTopic inventoryCommands() {
+		return TopicBuilder.name(Topics.INVENTORY_COMMANDS)
+				.partitions(3)
+				.replicas(1)
+				.build();
+	}
+
+	@Bean
+	NewTopic paymentCommands() {
+		return TopicBuilder.name(Topics.PAYMENT_COMMANDS)
+				.partitions(3)
+				.replicas(1)
+				.build();
+	}
+
 }
