@@ -2,7 +2,7 @@ package dev.ashish.payment.service;
 
 import dev.ashish.contracts.PaymentFailed;
 import dev.ashish.contracts.PaymentSucceeded;
-import dev.ashish.contracts.StockReserved;
+import dev.ashish.contracts.ProcessPayment;
 import dev.ashish.payment.domain.Payment;
 import dev.ashish.payment.domain.PaymentRepository;
 import dev.ashish.payment.messaging.PaymentEventPublisher;
@@ -29,27 +29,27 @@ public class PaymentService {
 	}
 
 	@Transactional
-	public void pay(StockReserved event) {
+	public void pay(ProcessPayment command) {
 		// order id is the primary key on payments, so if a row is already there this
 		// message has been through here before and the card must not be charged again
-		if (payments.existsById(event.orderId())) {
-			log.info("order {} already paid for, skipping", event.orderId());
+		if (payments.existsById(command.orderId())) {
+			log.info("order {} already paid for, skipping", command.orderId());
 			return;
 		}
 
-		FakeCardGateway.ChargeResult result = gateway.charge(event.customerId(), event.amount());
+		FakeCardGateway.ChargeResult result = gateway.charge(command.customerId(), command.amount());
 
 		if (!result.approved()) {
-			payments.save(Payment.declined(event.orderId(), event.customerId(), event.amount(), result.reason()));
-			log.info("declined order {}: {}", event.orderId(), result.reason());
-			publisher.publish(PaymentFailed.of(event.orderId(), event.customerId(),
-					event.amount(), result.reason()));
+			payments.save(Payment.declined(command.orderId(), command.customerId(), command.amount(), result.reason()));
+			log.info("declined order {}: {}", command.orderId(), result.reason());
+			publisher.publish(PaymentFailed.of(command.orderId(), command.customerId(),
+					command.amount(), result.reason()));
 			return;
 		}
 
-		payments.save(Payment.charged(event.orderId(), event.customerId(), event.amount()));
-		log.info("charged {} to {} for order {}", event.amount(), event.customerId(), event.orderId());
-		publisher.publish(PaymentSucceeded.of(event.orderId(), event.customerId(), event.amount()));
+		payments.save(Payment.charged(command.orderId(), command.customerId(), command.amount()));
+		log.info("charged {} to {} for order {}", command.amount(), command.customerId(), command.orderId());
+		publisher.publish(PaymentSucceeded.of(command.orderId(), command.customerId(), command.amount()));
 	}
 
 }

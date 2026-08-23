@@ -25,7 +25,7 @@ spring:
         spring.deserializer.key.delegate.class: org.apache.kafka.common.serialization.StringDeserializer
         spring.deserializer.value.delegate.class: org.springframework.kafka.support.serializer.JacksonJsonDeserializer
         spring.json.use.type.headers: false
-        spring.json.value.default.type: dev.ashish.contracts.InventoryEvent
+        spring.json.value.default.type: dev.ashish.contracts.PaymentCommand
         spring.json.trusted.packages: dev.ashish.contracts
     producer:
       key-serializer: org.apache.kafka.common.serialization.StringSerializer
