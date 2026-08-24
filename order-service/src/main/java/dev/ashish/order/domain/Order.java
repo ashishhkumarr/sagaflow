@@ -63,6 +63,17 @@ public class Order {
 		this.cancelReason = reason;
 	}
 
+	// payment fell over after stock was already taken, so the reason is kept now and
+	// the order does not finish until inventory says it gave the stock back
+	public void startCompensating(String reason) {
+		moveTo(OrderStatus.COMPENSATING);
+		this.cancelReason = reason;
+	}
+
+	public void finishCompensating() {
+		moveTo(OrderStatus.CANCELLED);
+	}
+
 	public UUID getId() {
 		return id;
 	}
