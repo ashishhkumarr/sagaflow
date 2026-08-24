@@ -23,6 +23,10 @@ public class CommandPublisher {
 		send(Topics.INVENTORY_COMMANDS, command.orderId().toString(), command);
 	}
 
+	public void releaseStock(InventoryCommand command) {
+		send(Topics.INVENTORY_COMMANDS, command.orderId().toString(), command);
+	}
+
 	public void processPayment(PaymentCommand command) {
 		send(Topics.PAYMENT_COMMANDS, command.orderId().toString(), command);
 	}

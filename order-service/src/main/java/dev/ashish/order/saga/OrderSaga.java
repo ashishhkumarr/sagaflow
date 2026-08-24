@@ -3,6 +3,7 @@ package dev.ashish.order.saga;
 import dev.ashish.contracts.OrderCancelled;
 import dev.ashish.contracts.OrderConfirmed;
 import dev.ashish.contracts.ProcessPayment;
+import dev.ashish.contracts.ReleaseStock;
 import dev.ashish.contracts.ReserveStock;
 import dev.ashish.order.domain.InvalidTransition;
 import dev.ashish.order.domain.Order;
@@ -68,7 +69,19 @@ public class OrderSaga {
 
 	@Transactional
 	public void onPaymentFailed(UUID orderId, String reason) {
-		step(orderId, order -> cancel(order, reason));
+		step(orderId, order -> {
+			order.startCompensating(reason);
+			commands.releaseStock(ReleaseStock.of(order.getId()));
+		});
+	}
+
+	@Transactional
+	public void onStockReleased(UUID orderId) {
+		step(orderId, order -> {
+			order.finishCompensating();
+			events.publish(OrderCancelled.of(order.getId(), order.getCustomerId(),
+					order.getItem(), order.getQuantity(), order.getCancelReason()));
+		});
 	}
 
 	private void cancel(Order order, String reason) {

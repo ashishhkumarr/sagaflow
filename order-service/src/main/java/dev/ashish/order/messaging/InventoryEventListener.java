@@ -2,6 +2,7 @@ package dev.ashish.order.messaging;
 
 import dev.ashish.contracts.InventoryEvent;
 import dev.ashish.contracts.StockRejected;
+import dev.ashish.contracts.StockReleased;
 import dev.ashish.contracts.StockReserved;
 import dev.ashish.contracts.Topics;
 import dev.ashish.order.saga.OrderSaga;
@@ -25,6 +26,7 @@ public class InventoryEventListener {
 		switch (event) {
 			case StockReserved reserved -> saga.onStockReserved(reserved.orderId());
 			case StockRejected rejected -> saga.onStockRejected(rejected.orderId(), rejected.reason());
+			case StockReleased released -> saga.onStockReleased(released.orderId());
 		}
 	}
 
