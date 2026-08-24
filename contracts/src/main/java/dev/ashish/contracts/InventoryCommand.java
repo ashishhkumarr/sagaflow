@@ -8,9 +8,10 @@ import java.util.UUID;
 // commands can be refused, events already happened. separate topics so that stays clear
 @JsonTypeInfo(use = JsonTypeInfo.Id.NAME, property = "type")
 @JsonSubTypes({
-		@JsonSubTypes.Type(value = ReserveStock.class, name = "reserve-stock")
+		@JsonSubTypes.Type(value = ReserveStock.class, name = "reserve-stock"),
+		@JsonSubTypes.Type(value = ReleaseStock.class, name = "release-stock")
 })
-public sealed interface InventoryCommand permits ReserveStock {
+public sealed interface InventoryCommand permits ReserveStock, ReleaseStock {
 
 	UUID orderId();
 
