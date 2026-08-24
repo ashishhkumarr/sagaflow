@@ -14,4 +14,8 @@ public interface StockRepository extends JpaRepository<Stock, String> {
 			+ "where s.item = :item and s.available >= :quantity")
 	int reserveIfAvailable(@Param("item") String item, @Param("quantity") int quantity);
 
+	@Modifying
+	@Query("update Stock s set s.available = s.available + :quantity where s.item = :item")
+	int giveBack(@Param("item") String item, @Param("quantity") int quantity);
+
 }

@@ -1,16 +1,21 @@
 package dev.ashish.inventory.service;
 
+import dev.ashish.contracts.ReleaseStock;
 import dev.ashish.contracts.ReserveStock;
 import dev.ashish.contracts.StockRejected;
+import dev.ashish.contracts.StockReleased;
 import dev.ashish.contracts.StockReserved;
 import dev.ashish.inventory.domain.Reservation;
 import dev.ashish.inventory.domain.ReservationRepository;
+import dev.ashish.inventory.domain.ReservationStatus;
 import dev.ashish.inventory.domain.StockRepository;
 import dev.ashish.inventory.messaging.InventoryEventPublisher;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.Optional;
 
 @Service
 public class InventoryService {
@@ -50,6 +55,33 @@ public class InventoryService {
 		reservations.save(new Reservation(command.orderId(), command.item(), command.quantity()));
 		log.info("reserved {} x{} for order {}", command.item(), command.quantity(), command.orderId());
 		publisher.publish(StockReserved.of(command.orderId(), command.item(), command.quantity()));
+	}
+
+	@Transactional
+	public void release(ReleaseStock command) {
+		Optional<Reservation> found = reservations.findById(command.orderId());
+		if (found.isEmpty()) {
+			log.warn("asked to release order {} but there is no reservation for it", command.orderId());
+			return;
+		}
+
+		Reservation reservation = found.get();
+
+		// releasing twice would put stock back that was never taken, so the row status
+		// decides. the reply still goes out either way, otherwise a lost reply leaves
+		// the order stuck waiting forever
+		if (reservation.getStatus() == ReservationStatus.RELEASED) {
+			log.info("order {} was already released, replying again", command.orderId());
+		}
+		else {
+			stock.giveBack(reservation.getItem(), reservation.getQuantity());
+			reservation.setStatus(ReservationStatus.RELEASED);
+			log.info("gave back {} x{} from order {}", reservation.getItem(),
+					reservation.getQuantity(), command.orderId());
+		}
+
+		publisher.publish(StockReleased.of(command.orderId(), reservation.getItem(),
+				reservation.getQuantity()));
 	}
 
 }
