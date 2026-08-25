@@ -52,3 +52,12 @@ moved off NEW.
 Stock starts at red shoe 10, green hat 5, blue shirt 3, black jacket 1, so ordering more
 than that gets rejected. Payments over 500 get declined, and so does any customer id
 starting with `fail-`, which is handy for testing the unhappy paths.
+
+## checking nothing got lost
+
+After killing services around or throwing a pile of orders at it, this checks that no
+order is stuck half way through and that the stock adds back up:
+
+```
+./scripts/reconcile.sh
+```
