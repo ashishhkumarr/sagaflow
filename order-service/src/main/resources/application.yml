@@ -34,6 +34,13 @@ spring:
         # consumers say what type they want, so no need to stamp the java class name on the message
         spring.json.add.type.headers: false
         interceptor.classes: dev.ashish.common.CorrelationProducerInterceptor
+        # default is 60s, which parks the poller thread for a whole minute when the
+        # broker is away. better to give up quickly and let the next poll try again
+        max.block.ms: 5000
+
+# how often the poller looks for messages waiting to go out
+outbox:
+  poll-ms: 500
 
 management:
   endpoints:
