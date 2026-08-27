@@ -1,4 +1,4 @@
-package dev.ashish.order.domain;
+package dev.ashish.outbox;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;

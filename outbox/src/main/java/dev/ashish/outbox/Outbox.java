@@ -1,8 +1,6 @@
-package dev.ashish.order.messaging;
+package dev.ashish.outbox;
 
 import dev.ashish.common.Correlation;
-import dev.ashish.order.domain.OutboxMessage;
-import dev.ashish.order.domain.OutboxRepository;
 import org.springframework.stereotype.Component;
 import tools.jackson.databind.json.JsonMapper;
 

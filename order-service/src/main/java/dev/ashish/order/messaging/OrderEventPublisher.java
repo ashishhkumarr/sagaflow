@@ -2,6 +2,7 @@ package dev.ashish.order.messaging;
 
 import dev.ashish.contracts.OrderEvent;
 import dev.ashish.contracts.Topics;
+import dev.ashish.outbox.Outbox;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
