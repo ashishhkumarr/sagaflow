@@ -33,11 +33,16 @@ spring:
       properties:
         spring.json.add.type.headers: false
         interceptor.classes: dev.ashish.common.CorrelationProducerInterceptor
+        # default 60s parks the poller thread when the broker is away
+        max.block.ms: 5000
 
 # there is no real card processor here, this is the rule the fake one uses to
 # decide. keeping it in config so tests can turn failures on and off
 payment:
   decline-over: 500.00
+
+outbox:
+  poll-ms: 500
 
 management:
   endpoints:

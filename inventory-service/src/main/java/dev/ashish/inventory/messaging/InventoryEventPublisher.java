@@ -2,9 +2,9 @@ package dev.ashish.inventory.messaging;
 
 import dev.ashish.contracts.InventoryEvent;
 import dev.ashish.contracts.Topics;
+import dev.ashish.outbox.Outbox;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -12,15 +12,17 @@ public class InventoryEventPublisher {
 
 	private static final Logger log = LoggerFactory.getLogger(InventoryEventPublisher.class);
 
-	private final KafkaTemplate<String, Object> kafka;
+	private final Outbox outbox;
 
-	public InventoryEventPublisher(KafkaTemplate<String, Object> kafka) {
-		this.kafka = kafka;
+	public InventoryEventPublisher(Outbox outbox) {
+		this.outbox = outbox;
 	}
 
 	public void publish(InventoryEvent event) {
-		kafka.send(Topics.INVENTORY_EVENTS, event.orderId().toString(), event);
-		log.info("published {} for order {}", event.getClass().getSimpleName(), event.orderId());
+		// goes in the same transaction as the stock change, so a crash here cannot
+		// leave stock taken with nobody told about it
+		outbox.put(Topics.INVENTORY_EVENTS, event.orderId().toString(), event);
+		log.info("queued {} for order {}", event.getClass().getSimpleName(), event.orderId());
 	}
 
 }
