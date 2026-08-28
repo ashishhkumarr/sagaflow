@@ -5,6 +5,7 @@ import dev.ashish.contracts.ReserveStock;
 import dev.ashish.contracts.StockRejected;
 import dev.ashish.contracts.StockReleased;
 import dev.ashish.contracts.StockReserved;
+import dev.ashish.inbox.Inbox;
 import dev.ashish.inventory.domain.Reservation;
 import dev.ashish.inventory.domain.ReservationRepository;
 import dev.ashish.inventory.domain.ReservationStatus;
@@ -28,21 +29,26 @@ public class InventoryService {
 
 	private final InventoryEventPublisher publisher;
 
+	private final Inbox inbox;
+
 	public InventoryService(StockRepository stock, ReservationRepository reservations,
-			InventoryEventPublisher publisher) {
+			InventoryEventPublisher publisher, Inbox inbox) {
 		this.stock = stock;
 		this.reservations = reservations;
 		this.publisher = publisher;
+		this.inbox = inbox;
 	}
 
 	@Transactional
 	public void reserve(ReserveStock command) {
-		// kafka delivers at least once so the same command can turn up twice. the
-		// reservation is keyed on order id, row already there means it was done
-		if (reservations.existsById(command.orderId())) {
-			log.info("order {} already reserved, skipping", command.orderId());
+		// kafka delivers at least once so the same command can turn up twice
+		if (inbox.alreadyHandled(command.commandId())) {
+			log.info("already handled the reserve for order {}, saying the same thing again",
+					command.orderId());
+			replyAgain(command);
 			return;
 		}
+		inbox.markHandled(command.commandId());
 
 		int updated = stock.reserveIfAvailable(command.item(), command.quantity());
 		if (updated == 0) {
@@ -55,6 +61,22 @@ public class InventoryService {
 		reservations.save(new Reservation(command.orderId(), command.item(), command.quantity()));
 		log.info("reserved {} x{} for order {}", command.item(), command.quantity(), command.orderId());
 		publisher.publish(StockReserved.of(command.orderId(), command.item(), command.quantity()));
+	}
+
+	// staying quiet on a repeat is only safe if the first answer got through. if it did
+	// not, the order sits waiting forever, so the same answer goes out again
+	private void replyAgain(ReserveStock command) {
+		boolean held = reservations.findById(command.orderId())
+				.filter(r -> r.getStatus() == ReservationStatus.RESERVED)
+				.isPresent();
+
+		if (held) {
+			publisher.publish(StockReserved.of(command.orderId(), command.item(), command.quantity()));
+		}
+		else {
+			String reason = stock.existsById(command.item()) ? "not enough stock" : "unknown item";
+			publisher.publish(StockRejected.of(command.orderId(), command.item(), command.quantity(), reason));
+		}
 	}
 
 	@Transactional
