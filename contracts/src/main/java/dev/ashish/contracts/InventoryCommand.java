@@ -13,6 +13,9 @@ import java.util.UUID;
 })
 public sealed interface InventoryCommand permits ReserveStock, ReleaseStock {
 
+	// the id of the message itself, used to spot a redelivery
+	UUID commandId();
+
 	UUID orderId();
 
 }

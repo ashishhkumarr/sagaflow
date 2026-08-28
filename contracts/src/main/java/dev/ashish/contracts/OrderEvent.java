@@ -14,6 +14,8 @@ import java.util.UUID;
 })
 public sealed interface OrderEvent permits OrderCreated, OrderConfirmed, OrderCancelled {
 
+	UUID eventId();
+
 	UUID orderId();
 
 }

@@ -11,6 +11,8 @@ import java.util.UUID;
 })
 public sealed interface PaymentCommand permits ProcessPayment {
 
+	UUID commandId();
+
 	UUID orderId();
 
 }

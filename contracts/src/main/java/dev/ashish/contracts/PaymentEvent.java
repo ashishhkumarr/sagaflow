@@ -12,6 +12,8 @@ import java.util.UUID;
 })
 public sealed interface PaymentEvent permits PaymentSucceeded, PaymentFailed {
 
+	UUID eventId();
+
 	UUID orderId();
 
 }

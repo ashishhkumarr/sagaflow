@@ -13,6 +13,8 @@ import java.util.UUID;
 })
 public sealed interface InventoryEvent permits StockReserved, StockRejected, StockReleased {
 
+	UUID eventId();
+
 	UUID orderId();
 
 }
