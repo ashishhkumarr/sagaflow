@@ -1,13 +1,14 @@
 package dev.ashish.inventory;
 
 import dev.ashish.common.CorrelationConfig;
+import dev.ashish.inbox.InboxConfig;
 import dev.ashish.outbox.OutboxConfig;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Import;
 
 @SpringBootApplication
-@Import({ CorrelationConfig.class, OutboxConfig.class })
+@Import({ CorrelationConfig.class, OutboxConfig.class, InboxConfig.class })
 public class InventoryServiceApplication {
 
 	public static void main(String[] args) {
