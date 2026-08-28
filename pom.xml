@@ -24,6 +24,7 @@
 		<module>contracts</module>
 		<module>common</module>
 		<module>outbox</module>
+		<module>inbox</module>
 		<module>order-service</module>
 		<module>inventory-service</module>
 		<module>payment-service</module>
