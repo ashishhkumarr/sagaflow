@@ -1,8 +1,8 @@
 #!/usr/bin/env bash
 # checks the two things that must always hold once the system goes quiet:
 #   1. every order ended up CONFIRMED or CANCELLED, nothing left mid saga
-#   2. stock on the shelf plus stock still held by live reservations adds back
-#      up to what was seeded
+#   2. stock on the shelf, plus stock held by live reservations, plus stock that was
+#      sold, adds back up to what was seeded
 # run it after throwing failures at the system
 
 set -u
@@ -33,11 +33,12 @@ for row in "red shoe:$SEED_RED" "green hat:$SEED_HAT" "blue shirt:$SEED_SHIRT" "
   seed="${row#*:}"
   avail=$(q_inv "select available from stock where item='$item';")
   held=$(q_inv "select coalesce(sum(quantity),0) from reservations where item='$item' and status='RESERVED';")
-  total=$((avail + held))
+  sold=$(q_inv "select coalesce(sum(quantity),0) from reservations where item='$item' and status='COMMITTED';")
+  total=$((avail + held + sold))
   if [ "$total" -eq "$seed" ]; then
-    printf "  ok    %-13s on shelf %-3s held %-3s = %s\n" "$item" "$avail" "$held" "$total"
+    printf "  ok    %-13s shelf %-3s held %-3s sold %-3s = %s\n" "$item" "$avail" "$held" "$sold" "$total"
   else
-    printf "  BAD   %-13s on shelf %-3s held %-3s = %s, seeded %s\n" "$item" "$avail" "$held" "$total" "$seed"
+    printf "  BAD   %-13s shelf %-3s held %-3s sold %-3s = %s, seeded %s\n" "$item" "$avail" "$held" "$sold" "$total" "$seed"
     fail=1
   fi
 done
