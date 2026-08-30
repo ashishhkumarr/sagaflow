@@ -41,6 +41,11 @@ spring:
 outbox:
   poll-ms: 500
 
+# stock held this long by an order that never finished gets put back on the shelf
+inventory:
+  reservation-ttl: 5m
+  expiry-sweep-ms: 10000
+
 management:
   endpoints:
     web:
