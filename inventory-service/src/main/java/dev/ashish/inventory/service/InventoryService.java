@@ -1,5 +1,6 @@
 package dev.ashish.inventory.service;
 
+import dev.ashish.contracts.CommitStock;
 import dev.ashish.contracts.ReleaseStock;
 import dev.ashish.contracts.ReserveStock;
 import dev.ashish.contracts.StockRejected;
@@ -49,6 +50,14 @@ public class InventoryService {
 			return;
 		}
 		inbox.markHandled(command.commandId());
+
+		// a retry arrives as a new command with a new id, so the inbox will not know it.
+		// the reservation keyed on order id is what stops the stock going down twice
+		if (reservations.existsById(command.orderId())) {
+			log.info("order {} already has a reservation, replying again", command.orderId());
+			replyAgain(command);
+			return;
+		}
 
 		int updated = stock.reserveIfAvailable(command.item(), command.quantity());
 		if (updated == 0) {
@@ -104,6 +113,18 @@ public class InventoryService {
 
 		publisher.publish(StockReleased.of(command.orderId(), reservation.getItem(),
 				reservation.getQuantity()));
+	}
+
+	// the order finished, so this stock is genuinely sold. without this the reservation
+	// stays RESERVED for ever and the expiry sweep eventually hands it back
+	@Transactional
+	public void commit(CommitStock command) {
+		reservations.findById(command.orderId())
+				.filter(r -> r.getStatus() == ReservationStatus.RESERVED)
+				.ifPresent(r -> {
+					r.setStatus(ReservationStatus.COMMITTED);
+					log.info("order {} completed, {} x{} is sold", command.orderId(), r.getItem(), r.getQuantity());
+				});
 	}
 
 }
