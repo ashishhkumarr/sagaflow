@@ -42,6 +42,12 @@ spring:
 outbox:
   poll-ms: 500
 
+# an order waiting this long has probably lost its command or its reply, so the
+# command goes out again
+saga:
+  retry-after: 30s
+  sweep-ms: 5000
+
 management:
   endpoints:
     web:

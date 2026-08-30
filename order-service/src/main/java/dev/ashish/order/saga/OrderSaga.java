@@ -1,5 +1,6 @@
 package dev.ashish.order.saga;
 
+import dev.ashish.contracts.CommitStock;
 import dev.ashish.contracts.OrderCancelled;
 import dev.ashish.contracts.OrderConfirmed;
 import dev.ashish.contracts.ProcessPayment;
@@ -62,6 +63,7 @@ public class OrderSaga {
 	public void onPaymentSucceeded(UUID orderId) {
 		step(orderId, order -> {
 			order.moveTo(OrderStatus.CONFIRMED);
+			commands.commitStock(CommitStock.of(order.getId()));
 			events.publish(OrderConfirmed.of(order.getId(), order.getCustomerId(),
 					order.getItem(), order.getQuantity()));
 		});
@@ -78,10 +80,32 @@ public class OrderSaga {
 	@Transactional
 	public void onStockReleased(UUID orderId) {
 		step(orderId, order -> {
+			// inventory can give the stock back on its own if a reservation sits too
+			// long. there is nothing left to undo at that point, only to record it
+			if (order.getStatus() == OrderStatus.AWAITING_PAYMENT) {
+				order.startCompensating("stock reservation expired");
+			}
 			order.finishCompensating();
 			events.publish(OrderCancelled.of(order.getId(), order.getCustomerId(),
 					order.getItem(), order.getQuantity(), order.getCancelReason()));
 		});
+	}
+
+	// the command is sent again rather than the order being cancelled. that is only safe
+	// because the other services check for a repeat and answer with what they decided
+	// the first time round
+	@Transactional
+	public void resend(Order order) {
+		switch (order.getStatus()) {
+			case AWAITING_STOCK -> commands.reserveStock(
+					ReserveStock.of(order.getId(), order.getItem(), order.getQuantity()));
+			case AWAITING_PAYMENT -> commands.processPayment(
+					ProcessPayment.of(order.getId(), order.getCustomerId(), order.getAmount()));
+			default -> {
+				return;
+			}
+		}
+		order.touch();
 	}
 
 	private void cancel(Order order, String reason) {

@@ -74,6 +74,12 @@ public class Order {
 		moveTo(OrderStatus.CANCELLED);
 	}
 
+	// used after a retry goes out, so the sweep waits the full gap again instead of
+	// firing on the same order every time it runs
+	public void touch() {
+		this.updatedAt = Instant.now();
+	}
+
 	public UUID getId() {
 		return id;
 	}
