@@ -27,6 +27,10 @@ public class CommandPublisher {
 		queue(Topics.INVENTORY_COMMANDS, command.orderId().toString(), command);
 	}
 
+	public void commitStock(InventoryCommand command) {
+		queue(Topics.INVENTORY_COMMANDS, command.orderId().toString(), command);
+	}
+
 	public void processPayment(PaymentCommand command) {
 		queue(Topics.PAYMENT_COMMANDS, command.orderId().toString(), command);
 	}

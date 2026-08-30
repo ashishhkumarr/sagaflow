@@ -9,9 +9,10 @@ import java.util.UUID;
 @JsonTypeInfo(use = JsonTypeInfo.Id.NAME, property = "type")
 @JsonSubTypes({
 		@JsonSubTypes.Type(value = ReserveStock.class, name = "reserve-stock"),
-		@JsonSubTypes.Type(value = ReleaseStock.class, name = "release-stock")
+		@JsonSubTypes.Type(value = ReleaseStock.class, name = "release-stock"),
+		@JsonSubTypes.Type(value = CommitStock.class, name = "commit-stock")
 })
-public sealed interface InventoryCommand permits ReserveStock, ReleaseStock {
+public sealed interface InventoryCommand permits ReserveStock, ReleaseStock, CommitStock {
 
 	// the id of the message itself, used to spot a redelivery
 	UUID commandId();

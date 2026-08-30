@@ -1,5 +1,6 @@
 package dev.ashish.inventory.messaging;
 
+import dev.ashish.contracts.CommitStock;
 import dev.ashish.contracts.InventoryCommand;
 import dev.ashish.contracts.ReleaseStock;
 import dev.ashish.contracts.ReserveStock;
@@ -22,6 +23,7 @@ public class InventoryCommandListener {
 		switch (command) {
 			case ReserveStock reserve -> inventory.reserve(reserve);
 			case ReleaseStock release -> inventory.release(release);
+			case CommitStock commit -> inventory.commit(commit);
 		}
 	}
 
