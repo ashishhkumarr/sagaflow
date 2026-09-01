@@ -61,3 +61,16 @@ order is stuck half way through and that the stock adds back up:
 ```
 ./scripts/reconcile.sh
 ```
+
+## when a message cannot be handled
+
+A listener that throws gets a few more goes with a growing gap between them, so a
+database blip does not cost the message. If it still fails, or the message is malformed
+and will never parse, it goes to `<topic>.dlt` with the exception and stack trace in the
+headers rather than being dropped.
+
+```
+docker exec kafka /opt/kafka/bin/kafka-console-consumer.sh \
+  --bootstrap-server localhost:19092 --topic inventory.commands.dlt \
+  --from-beginning --property print.headers=true
+```
