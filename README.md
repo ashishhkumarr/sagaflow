@@ -74,3 +74,14 @@ docker exec kafka /opt/kafka/bin/kafka-console-consumer.sh \
   --bootstrap-server localhost:19092 --topic inventory.commands.dlt \
   --from-beginning --property print.headers=true
 ```
+
+## tests
+
+The inventory tests spin up their own Postgres and Kafka in containers, so they do not
+care what is running on the machine.
+
+```
+./mvnw -pl inventory-service test
+```
+
+Needs Docker running. First run pulls the images so it takes a while.
