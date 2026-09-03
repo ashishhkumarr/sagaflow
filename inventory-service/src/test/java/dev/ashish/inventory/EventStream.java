@@ -8,6 +8,7 @@ import org.apache.kafka.common.serialization.StringDeserializer;
 
 import java.time.Duration;
 import java.time.Instant;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -40,6 +41,22 @@ final class EventStream implements AutoCloseable {
 			}
 		}
 		throw new AssertionError("no matching message on the topic within " + timeout);
+	}
+
+	// keeps reading for the whole window instead of stopping at the first hit, so a
+	// test can tell one reply apart from two
+	List<String> collectFor(Predicate<String> matches, Duration window) {
+		List<String> found = new ArrayList<>();
+		Instant stopAt = Instant.now().plus(window);
+		while (Instant.now().isBefore(stopAt)) {
+			ConsumerRecords<String, String> batch = consumer.poll(Duration.ofMillis(300));
+			for (ConsumerRecord<String, String> record : batch) {
+				if (matches.test(record.value())) {
+					found.add(record.value());
+				}
+			}
+		}
+		return found;
 	}
 
 	@Override
