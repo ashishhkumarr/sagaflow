@@ -1,10 +1,8 @@
 package dev.ashish.payment;
 
 import org.junit.jupiter.api.Test;
-import org.springframework.boot.test.context.SpringBootTest;
 
-@SpringBootTest
-class PaymentServiceApplicationTests {
+class PaymentServiceApplicationTests extends IntegrationTest {
 
 	@Test
 	void contextLoads() {
