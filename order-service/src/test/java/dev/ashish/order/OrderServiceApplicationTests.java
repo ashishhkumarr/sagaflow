@@ -1,10 +1,8 @@
 package dev.ashish.order;
 
 import org.junit.jupiter.api.Test;
-import org.springframework.boot.test.context.SpringBootTest;
 
-@SpringBootTest
-class OrderServiceApplicationTests {
+class OrderServiceApplicationTests extends IntegrationTest {
 
 	@Test
 	void contextLoads() {
