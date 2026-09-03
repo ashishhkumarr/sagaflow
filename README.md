@@ -77,11 +77,20 @@ docker exec kafka /opt/kafka/bin/kafka-console-consumer.sh \
 
 ## tests
 
-The inventory tests spin up their own Postgres and Kafka in containers, so they do not
-care what is running on the machine.
+Every service brings up its own Postgres and Kafka in containers, so the tests do not
+care what is running on the machine. `docker compose` does not need to be up.
 
 ```
-./mvnw -pl inventory-service test
+./mvnw test
 ```
 
 Needs Docker running. First run pulls the images so it takes a while.
+
+What they cover, mostly the things that actually went wrong while building this:
+
+- an order going all the way to confirmed, and a failed payment putting the stock back
+  before the order is cancelled
+- a reply for a step the order is already past being ignored
+- the same command arriving twice only moving stock once, and only charging once
+- a resent command with a fresh id still not taking stock twice
+- releasing twice not inventing stock that never existed
