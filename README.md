@@ -53,6 +53,21 @@ Stock starts at red shoe 10, green hat 5, blue shirt 3, black jacket 1, so order
 than that gets rejected. Payments over 500 get declined, and so does any customer id
 starting with `fail-`, which is handy for testing the unhappy paths.
 
+## the dashboard
+
+A small React app to place orders and watch them move, instead of reading four log
+files. Start the services first, then:
+
+```
+cd dashboard
+npm install
+npm run dev
+```
+
+It polls the order service once a second, so an order placed there changes from
+AWAITING_STOCK to CONFIRMED, or goes red with the reason it was cancelled, without a
+refresh.
+
 ## checking nothing got lost
 
 After killing services around or throwing a pile of orders at it, this checks that no
