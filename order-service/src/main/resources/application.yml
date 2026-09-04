@@ -38,6 +38,10 @@ spring:
         # broker is away. better to give up quickly and let the next poll try again
         max.block.ms: 5000
 
+# where the dashboard runs in development
+dashboard:
+  origin: http://localhost:5173
+
 # how often the poller looks for messages waiting to go out
 outbox:
   poll-ms: 500
