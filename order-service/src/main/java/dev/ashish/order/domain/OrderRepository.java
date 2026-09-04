@@ -15,4 +15,6 @@ public interface OrderRepository extends JpaRepository<Order, UUID> {
 			+ "and o.updatedAt < :cutoff")
 	List<Order> findWaitingSince(@Param("cutoff") Instant cutoff);
 
+	List<Order> findTop50ByOrderByCreatedAtDesc();
+
 }

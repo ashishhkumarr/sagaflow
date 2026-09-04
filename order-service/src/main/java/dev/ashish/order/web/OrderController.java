@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.net.URI;
+import java.util.List;
 import java.util.UUID;
 
 @RestController
@@ -37,6 +38,11 @@ public class OrderController {
 		return ResponseEntity
 				.created(URI.create("/orders/" + order.getId()))
 				.body(OrderResponse.from(order));
+	}
+
+	@GetMapping
+	public List<OrderResponse> listRecent() {
+		return orderService.recent().stream().map(OrderResponse::from).toList();
 	}
 
 	@GetMapping("/{id}")

@@ -15,7 +15,9 @@ public record OrderResponse(
 		int quantity,
 		BigDecimal amount,
 		OrderStatus status,
-		Instant createdAt
+		String cancelReason,
+		Instant createdAt,
+		Instant updatedAt
 
 ) {
 
@@ -27,7 +29,9 @@ public record OrderResponse(
 				order.getQuantity(),
 				order.getAmount(),
 				order.getStatus(),
-				order.getCreatedAt());
+				order.getCancelReason(),
+				order.getCreatedAt(),
+				order.getUpdatedAt());
 	}
 
 }
