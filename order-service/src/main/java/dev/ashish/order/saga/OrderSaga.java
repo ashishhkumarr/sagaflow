@@ -10,6 +10,8 @@ import dev.ashish.order.domain.InvalidTransition;
 import dev.ashish.order.domain.Order;
 import dev.ashish.order.domain.OrderRepository;
 import dev.ashish.order.domain.OrderStatus;
+import dev.ashish.order.domain.OrderStep;
+import dev.ashish.order.domain.OrderStepRepository;
 import dev.ashish.order.messaging.CommandPublisher;
 import dev.ashish.order.messaging.OrderEventPublisher;
 import org.slf4j.Logger;
@@ -34,15 +36,20 @@ public class OrderSaga {
 
 	private final OrderEventPublisher events;
 
-	public OrderSaga(OrderRepository orders, CommandPublisher commands, OrderEventPublisher events) {
+	private final OrderStepRepository steps;
+
+	public OrderSaga(OrderRepository orders, CommandPublisher commands, OrderEventPublisher events,
+			OrderStepRepository steps) {
 		this.orders = orders;
 		this.commands = commands;
 		this.events = events;
+		this.steps = steps;
 	}
 
 	@Transactional
 	public void start(Order order) {
 		order.moveTo(OrderStatus.AWAITING_STOCK);
+		record(order, "asked inventory to hold the stock");
 		commands.reserveStock(ReserveStock.of(order.getId(), order.getItem(), order.getQuantity()));
 	}
 
@@ -108,6 +115,20 @@ public class OrderSaga {
 		order.touch();
 	}
 
+	private void record(Order order, String detail) {
+		steps.save(new OrderStep(order.getId(), order.getStatus(), detail));
+	}
+
+	private String detailFor(Order order) {
+		return switch (order.getStatus()) {
+			case AWAITING_PAYMENT -> "stock is held, asked payment to charge the card";
+			case CONFIRMED -> "paid, the stock is now sold";
+			case COMPENSATING -> "payment did not go through, asking for the stock back";
+			case CANCELLED -> order.getCancelReason();
+			default -> null;
+		};
+	}
+
 	private void cancel(Order order, String reason) {
 		order.cancel(reason);
 		events.publish(OrderCancelled.of(order.getId(), order.getCustomerId(),
@@ -124,8 +145,12 @@ public class OrderSaga {
 		}
 
 		Order order = found.get();
+		OrderStatus before = order.getStatus();
 		try {
 			change.accept(order);
+			if (order.getStatus() != before) {
+				record(order, detailFor(order));
+			}
 			log.info("order {} is now {}", orderId, order.getStatus());
 		}
 		catch (InvalidTransition e) {
