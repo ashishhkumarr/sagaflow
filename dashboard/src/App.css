@@ -170,3 +170,100 @@ tr:first-child td {
   color: #f79b93;
   font-size: 12px;
 }
+
+.column {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.clickable {
+  cursor: pointer;
+}
+
+.clickable:hover td {
+  background: #21252e;
+}
+
+.timeline-cell {
+  background: #16181e;
+  padding: 12px 16px;
+}
+
+.timeline {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.timeline li {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 5px 0;
+  font-size: 12px;
+}
+
+.dot {
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  flex: 0 0 auto;
+}
+
+.dot.done {
+  background: #6ee7a8;
+}
+
+.dot.failed {
+  background: #f79b93;
+}
+
+.dot.undoing {
+  background: #f2c14e;
+}
+
+.dot.waiting {
+  background: #7fb2f0;
+}
+
+.step-name {
+  min-width: 140px;
+  font-weight: 600;
+}
+
+.step-detail {
+  color: var(--dim);
+  flex: 1;
+}
+
+.step-gap {
+  color: var(--dim);
+  font-family: ui-monospace, monospace;
+}
+
+.services {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 14px;
+}
+
+.service {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+}
+
+.snippet {
+  margin: 10px 0 0;
+  padding: 9px 10px;
+  background: #12141a;
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  font-family: ui-monospace, monospace;
+  font-size: 11px;
+  color: var(--dim);
+  white-space: pre;
+  overflow-x: auto;
+}

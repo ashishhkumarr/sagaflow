@@ -1,6 +1,7 @@
+import { Fragment, useState } from "react";
 import type { Order, OrderStatus } from "./api";
+import { Timeline } from "./Timeline";
 
-// the middle three mean the order is still being worked on
 const inFlight: OrderStatus[] = ["NEW", "AWAITING_STOCK", "AWAITING_PAYMENT", "COMPENSATING"];
 
 function statusClass(status: OrderStatus) {
@@ -17,6 +18,7 @@ function age(iso: string) {
 }
 
 export function OrderTable({ orders }: { orders: Order[] }) {
+  const [open, setOpen] = useState<string | null>(null);
   const working = orders.filter((order) => inFlight.includes(order.status)).length;
 
   return (
@@ -30,19 +32,31 @@ export function OrderTable({ orders }: { orders: Order[] }) {
       <table>
         <tbody>
           {orders.map((order) => (
-            <tr key={order.id}>
-              <td className="mono">{order.id.slice(0, 8)}</td>
-              <td>{order.customerId}</td>
-              <td>
-                {order.item} <span className="dim">x{order.quantity}</span>
-              </td>
-              <td className="mono">{order.amount.toFixed(2)}</td>
-              <td>
-                <span className={statusClass(order.status)}>{order.status}</span>
-                {order.cancelReason && <div className="reason">{order.cancelReason}</div>}
-              </td>
-              <td className="dim">{age(order.updatedAt)}</td>
-            </tr>
+            <Fragment key={order.id}>
+              <tr
+                className="clickable"
+                onClick={() => setOpen(open === order.id ? null : order.id)}
+              >
+                <td className="mono">{order.id.slice(0, 8)}</td>
+                <td>{order.customerId}</td>
+                <td>
+                  {order.item} <span className="dim">x{order.quantity}</span>
+                </td>
+                <td className="mono">{order.amount.toFixed(2)}</td>
+                <td>
+                  <span className={statusClass(order.status)}>{order.status}</span>
+                  {order.cancelReason && <div className="reason">{order.cancelReason}</div>}
+                </td>
+                <td className="dim">{age(order.updatedAt)}</td>
+              </tr>
+              {open === order.id && (
+                <tr>
+                  <td colSpan={6} className="timeline-cell">
+                    <Timeline orderId={order.id} />
+                  </td>
+                </tr>
+              )}
+            </Fragment>
           ))}
         </tbody>
       </table>

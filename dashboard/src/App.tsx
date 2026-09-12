@@ -1,11 +1,13 @@
 import { useCallback, useEffect, useState } from "react";
-import { listOrders, type Order } from "./api";
+import { listOrders, listServices, type Order, type ServiceState } from "./api";
 import { OrderForm } from "./OrderForm";
 import { OrderTable } from "./OrderTable";
+import { Services } from "./Services";
 import "./App.css";
 
 export default function App() {
   const [orders, setOrders] = useState<Order[]>([]);
+  const [services, setServices] = useState<ServiceState[]>([]);
   const [offline, setOffline] = useState(false);
 
   const refresh = useCallback(async () => {
@@ -14,6 +16,11 @@ export default function App() {
       setOffline(false);
     } catch {
       setOffline(true);
+    }
+    try {
+      setServices(await listServices());
+    } catch {
+      setServices([]);
     }
   }, []);
 
@@ -29,14 +36,17 @@ export default function App() {
       <header>
         <h1>order saga</h1>
         <p>
-          four services, four databases, talking over kafka. place an order and watch it
-          move.
+          four services, four databases, talking over kafka. place an order and click it
+          to see the path it took.
         </p>
         {offline && <p className="error">cannot reach the order service on 8081</p>}
       </header>
 
       <main>
-        <OrderForm onPlaced={refresh} />
+        <div className="column">
+          <OrderForm onPlaced={refresh} />
+          <Services services={services} />
+        </div>
         <OrderTable orders={orders} />
       </main>
     </div>
