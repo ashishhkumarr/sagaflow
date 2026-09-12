@@ -68,6 +68,14 @@ It polls the order service once a second, so an order placed there changes from
 AWAITING_STOCK to CONFIRMED, or goes red with the reason it was cancelled, without a
 refresh.
 
+Click an order to see every move it made and how long each one took. A failed payment
+shows the run turning around at COMPENSATING and walking back before it ends up
+CANCELLED.
+
+The panel underneath the form says which services are answering. Stop one and place an
+order: it sits waiting rather than failing, and finishes by itself once the service is
+back.
+
 ## checking nothing got lost
 
 After killing services around or throwing a pile of orders at it, this checks that no
