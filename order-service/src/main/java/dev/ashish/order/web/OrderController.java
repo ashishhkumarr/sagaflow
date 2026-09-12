@@ -45,6 +45,11 @@ public class OrderController {
 		return orderService.recent().stream().map(OrderResponse::from).toList();
 	}
 
+	@GetMapping("/{id}/steps")
+	public List<StepResponse> steps(@PathVariable UUID id) {
+		return orderService.stepsFor(id).stream().map(StepResponse::from).toList();
+	}
+
 	@GetMapping("/{id}")
 	public OrderResponse getOne(@PathVariable UUID id) {
 		return orderService.findById(id)
