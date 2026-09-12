@@ -38,6 +38,12 @@ spring:
         # broker is away. better to give up quickly and let the next poll try again
         max.block.ms: 5000
 
+# only used to show on the dashboard whether they are answering
+services:
+  inventory: http://localhost:8082
+  payment: http://localhost:8083
+  notification: http://localhost:8084
+
 # where the dashboard runs in development
 dashboard:
   origin: http://localhost:5173
