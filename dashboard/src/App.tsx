@@ -34,12 +34,12 @@ export default function App() {
   return (
     <div className="page">
       <header>
-        <h1>order saga</h1>
+        <h1>Order Saga</h1>
         <p>
-          four services, four databases, talking over kafka. place an order and click it
-          to see the path it took.
+          Four services and four databases, communicating over Kafka. Place an order, then
+          click it to see the path it took.
         </p>
-        {offline && <p className="error">cannot reach the order service on 8081</p>}
+        {offline && <p className="error">Cannot reach the order service on port 8081.</p>}
       </header>
 
       <main>

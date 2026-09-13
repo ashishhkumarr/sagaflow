@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { placeOrder } from "./api";
+import { capitalize } from "./format";
 
 const items = ["red shoe", "green hat", "blue shirt", "black jacket"];
 
@@ -19,7 +20,7 @@ export function OrderForm({ onPlaced }: { onPlaced: () => void }) {
       await placeOrder({ customerId, item, quantity, amount });
       onPlaced();
     } catch (e) {
-      setError(e instanceof Error ? e.message : "something went wrong");
+      setError(e instanceof Error ? e.message : "Something went wrong.");
     } finally {
       setSending(false);
     }
@@ -27,26 +28,26 @@ export function OrderForm({ onPlaced }: { onPlaced: () => void }) {
 
   return (
     <form className="panel" onSubmit={submit}>
-      <h2>place an order</h2>
+      <h2>Place an Order</h2>
 
       <label>
-        customer
+        Customer ID
         <input value={customerId} onChange={(e) => setCustomerId(e.target.value)} />
       </label>
 
       <label>
-        item
+        Item
         <select value={item} onChange={(e) => setItem(e.target.value)}>
           {items.map((option) => (
             <option key={option} value={option}>
-              {option}
+              {capitalize(option)}
             </option>
           ))}
         </select>
       </label>
 
       <label>
-        quantity
+        Quantity
         <input
           type="number"
           min={1}
@@ -56,7 +57,7 @@ export function OrderForm({ onPlaced }: { onPlaced: () => void }) {
       </label>
 
       <label>
-        amount
+        Amount
         <input
           type="number"
           step="0.01"
@@ -67,12 +68,12 @@ export function OrderForm({ onPlaced }: { onPlaced: () => void }) {
       </label>
 
       <button type="submit" disabled={sending}>
-        {sending ? "sending..." : "place order"}
+        {sending ? "Sending…" : "Place Order"}
       </button>
 
       <p className="hint">
-        a customer id starting with <code>fail-</code> gets declined, and so does any
-        amount over 500. either one makes the saga roll the stock back.
+        A customer ID starting with <code>fail-</code> is declined, as is any amount over
+        500. Either one makes the saga return the reserved stock.
       </p>
 
       {error && <p className="error">{error}</p>}

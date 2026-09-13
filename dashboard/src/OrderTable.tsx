@@ -1,5 +1,6 @@
 import { Fragment, useState } from "react";
 import type { Order, OrderStatus } from "./api";
+import { capitalize, statusLabel } from "./format";
 import { Timeline } from "./Timeline";
 
 const inFlight: OrderStatus[] = ["NEW", "AWAITING_STOCK", "AWAITING_PAYMENT", "COMPENSATING"];
@@ -24,10 +25,13 @@ export function OrderTable({ orders }: { orders: Order[] }) {
   return (
     <div className="panel">
       <h2>
-        orders <span className="count">{orders.length} shown, {working} still going</span>
+        Orders{" "}
+        <span className="count">
+          {orders.length} shown, {working} in progress
+        </span>
       </h2>
 
-      {orders.length === 0 && <p className="hint">nothing yet, place one on the left</p>}
+      {orders.length === 0 && <p className="hint">No orders yet. Place one using the form.</p>}
 
       <table>
         <tbody>
@@ -40,12 +44,14 @@ export function OrderTable({ orders }: { orders: Order[] }) {
                 <td className="mono">{order.id.slice(0, 8)}</td>
                 <td>{order.customerId}</td>
                 <td>
-                  {order.item} <span className="dim">x{order.quantity}</span>
+                  {capitalize(order.item)} <span className="dim">×{order.quantity}</span>
                 </td>
                 <td className="mono">{order.amount.toFixed(2)}</td>
                 <td>
-                  <span className={statusClass(order.status)}>{order.status}</span>
-                  {order.cancelReason && <div className="reason">{order.cancelReason}</div>}
+                  <span className={statusClass(order.status)}>{statusLabel(order.status)}</span>
+                  {order.cancelReason && (
+                    <div className="reason">{capitalize(order.cancelReason)}</div>
+                  )}
                 </td>
                 <td className="dim">{age(order.updatedAt)}</td>
               </tr>

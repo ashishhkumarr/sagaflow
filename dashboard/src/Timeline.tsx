@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { listSteps, type Step } from "./api";
+import { capitalize, statusLabel } from "./format";
 
 // the compensating step is the interesting one, it is where the order stops going
 // forward and starts undoing what it already did
@@ -33,19 +34,19 @@ export function Timeline({ orderId }: { orderId: string }) {
       {steps.map((step, index) => {
         const previous = steps[index - 1];
         const gap = previous
-          ? `+${Math.max(0, new Date(step.at).getTime() - new Date(previous.at).getTime())}ms`
+          ? `+${Math.max(0, new Date(step.at).getTime() - new Date(previous.at).getTime())} ms`
           : clock(step.at);
 
         return (
           <li key={`${step.status}-${step.at}-${index}`}>
             <span className={marker(step.status)} />
-            <span className="step-name">{step.status}</span>
-            {step.detail && <span className="step-detail">{step.detail}</span>}
+            <span className="step-name">{statusLabel(step.status)}</span>
+            {step.detail && <span className="step-detail">{capitalize(step.detail)}</span>}
             <span className="step-gap">{gap}</span>
           </li>
         );
       })}
-      {steps.length === 0 && <li className="dim">nothing recorded yet</li>}
+      {steps.length === 0 && <li className="dim">Nothing recorded yet.</li>}
     </ol>
   );
 }
