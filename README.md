@@ -85,6 +85,32 @@ order is stuck half way through and that the stock adds back up:
 ./scripts/reconcile.sh
 ```
 
+## breaking it on purpose
+
+`scripts/chaos.sh` runs through the failures that came up while building this, one at
+a time, each from a clean reset:
+
+- inventory stopped while orders come in
+- payment stopped after stock is already reserved
+- the order service killed straight after taking orders
+- kafka stopped while orders are placed
+- the inventory database dropping out for a few seconds
+- thirty orders at once while payment restarts
+
+Every scenario places a mix of orders that should go through, get declined, go over the
+limit or run out of stock, waits for nothing to be in flight, then runs `reconcile.sh`.
+
+```
+./mvnw package -DskipTests
+docker compose up -d
+./scripts/chaos.sh                 # everything
+./scripts/chaos.sh broker_down     # just one
+```
+
+The services run from the jars, and their logs end up in `logs/`. `scripts/services.sh`
+starts and stops them on their own, and `scripts/reset.sh` wipes the orders and puts the
+stock back.
+
 ## when a message cannot be handled
 
 A listener that throws gets a few more goes with a growing gap between them, so a
