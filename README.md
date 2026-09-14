@@ -111,6 +111,31 @@ The services run from the jars, and their logs end up in `logs/`. `scripts/servi
 starts and stops them on their own, and `scripts/reset.sh` wipes the orders and puts the
 stock back.
 
+## running it on a server
+
+`docker-compose.prod.yml` puts the whole thing on one machine: Kafka, the three databases,
+the four services, and the dashboard behind nginx. Only the dashboard is published, on port
+80, and nginx passes `/api` on to the order service. Kafka, the databases and the services
+cannot be reached from outside.
+
+```
+cp .env.example .env          # then set a real POSTGRES_PASSWORD
+docker compose -f docker-compose.prod.yml up -d --build
+```
+
+The first build takes a few minutes because Maven and every dependency get downloaded inside
+the image.
+
+Before any service starts, a one-off `kafka-init` container creates the topics. Without it a
+fresh broker stalled some orders for about five minutes. A service would subscribe to a topic
+that did not exist yet, Kafka would make it with a single partition, and when the owning
+service raised it to three, the consumer took five minutes to notice the new partitions.
+Orders that landed on those partitions just sat there. The dev `docker-compose.yml` does the
+same thing for the same reason.
+
+Everything together uses about 2 GB of memory when idle, so a server with 4 GB is a
+comfortable size. A 1 GB machine will not fit four JVMs and Kafka.
+
 ## when a message cannot be handled
 
 A listener that throws gets a few more goes with a growing gap between them, so a
