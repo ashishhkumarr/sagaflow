@@ -39,7 +39,7 @@ export default function App() {
           Four services and four databases, communicating over Kafka. Place an order, then
           click it to see the path it took.
         </p>
-        {offline && <p className="error">Cannot reach the order service on port 8081.</p>}
+        {offline && <p className="error">Cannot reach the order service.</p>}
       </header>
 
       <main>
