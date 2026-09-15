@@ -39,6 +39,8 @@ export async function placeOrder(order: NewOrder): Promise<Order> {
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(order),
   });
+  // nginx sends 429 when one address places too many orders in a short time
+  if (response.status === 429) throw new Error("Too many orders at once. Try again in a minute.");
   if (!response.ok) throw new Error(`Order was rejected (${response.status})`);
   return response.json();
 }
