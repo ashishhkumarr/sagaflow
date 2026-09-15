@@ -136,6 +136,19 @@ same thing for the same reason.
 Everything together uses about 2 GB of memory when idle, so a server with 4 GB is a
 comfortable size. A 1 GB machine will not fit four JVMs and Kafka.
 
+The link is public, so nginx limits how fast one address can call `/api`, and placing
+orders has a tighter limit of its own. Past that it answers 429 and the form says to try
+again in a minute.
+
+There is not much stock, so a few visitors would sell everything out. A cron job on the
+server runs `scripts/reset.sh` every night to clear the orders and put the stock back:
+
+```
+30 18 * * * cd /home/opc/order-saga && ORDER_DB=order-saga-order-db-1 INVENTORY_DB=order-saga-inventory-db-1 PAYMENT_DB=order-saga-payment-db-1 ./scripts/reset.sh >> /home/opc/reset.log 2>&1
+```
+
+18:30 UTC is midnight in India, where the server is.
+
 ## when a message cannot be handled
 
 A listener that throws gets a few more goes with a growing gap between them, so a
