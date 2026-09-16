@@ -2,8 +2,8 @@
 #   cp .env.example .env        then put a real password in it
 #   docker compose -f docker-compose.prod.yml up -d --build
 #
-# only the dashboard is published. kafka, the databases and the services stay on the
-# docker network and cannot be reached from outside
+# only caddy is published, on 80 and 443. the dashboard, kafka, the databases and the
+# services stay on the docker network and cannot be reached from outside
 
 name: sagaflow
 
@@ -207,14 +207,34 @@ services:
   dashboard:
     build: ./dashboard
     restart: unless-stopped
-    ports:
-      - "${HTTP_PORT:-80}:80"
     depends_on:
       order-service:
         condition: service_healthy
+
+  # the only service with published ports. it terminates https and hands everything to
+  # the dashboard, which is why the dashboard itself no longer needs a port here
+  caddy:
+    image: caddy:2-alpine
+    restart: unless-stopped
+    mem_limit: 128m
+    ports:
+      - "80:80"
+      - "443:443"
+    environment:
+      SITE_DOMAIN: ${SITE_DOMAIN:-localhost}
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile:ro
+      # the certificate lives here, so it survives a restart instead of being asked for
+      # again every time
+      - caddy-data:/data
+      - caddy-config:/config
+    depends_on:
+      - dashboard
 
 volumes:
   kafka-data:
   order-data:
   inventory-data:
   payment-data:
+  caddy-data:
+  caddy-config:

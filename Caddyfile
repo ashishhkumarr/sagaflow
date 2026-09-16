@@ -1,0 +1,14 @@
+# caddy holds port 80 and 443. it asks let's encrypt for the certificate the first time
+# the domain is hit, renews it on its own, and sends plain http over to https without
+# being told to. SITE_DOMAIN comes from .env
+
+{$SITE_DOMAIN} {
+	encode gzip
+	reverse_proxy dashboard:80
+}
+
+# www is its own block so a problem getting its certificate cannot take the main site
+# down with it
+www.{$SITE_DOMAIN} {
+	redir https://{$SITE_DOMAIN}{uri} permanent
+}
