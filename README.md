@@ -11,7 +11,7 @@ services crashing halfway through, Kafka going down, the same message arriving t
 reply showing up late. None of that should lose an order, sell stock twice or charge a card
 twice.
 
-**Live demo:** http://92.4.88.158 (orders and stock reset every night)
+**Live demo:** https://sagaflow.tech (orders and stock reset every night)
 
 ![placing an order and watching a failed payment get rolled back](docs/demo.gif)
 
@@ -215,14 +215,19 @@ docker compose up -d
 ## running it on a server
 
 `docker-compose.prod.yml` puts the whole thing on one machine: Kafka, the three databases,
-the four services, and the dashboard behind nginx. Only the dashboard is published, on port
-80, and nginx passes `/api` on to the order service. Kafka, the databases and the services
-cannot be reached from outside.
+the four services, the dashboard behind nginx, and Caddy in front of all of it. Only Caddy
+is published, on 80 and 443. It gets the HTTPS certificate from Let's Encrypt the first time
+the domain is visited and renews it on its own, so there is nothing to remember. nginx passes
+`/api` on to the order service. Kafka, the databases and the services cannot be reached from
+outside.
 
 ```
-cp .env.example .env          # then set a real POSTGRES_PASSWORD
+cp .env.example .env          # a real POSTGRES_PASSWORD, and the domain in SITE_DOMAIN
 docker compose -f docker-compose.prod.yml up -d --build
 ```
+
+The domain has to point at the server before the first start, otherwise Caddy cannot prove
+it owns it and the certificate request fails.
 
 The first build takes a few minutes because Maven and every dependency get downloaded inside
 the image.
@@ -246,8 +251,8 @@ server runs `scripts/reset.sh` every night to clear the orders and put the stock
 
 ## known limits
 
-- No login and no HTTPS. Anyone with the link can place orders, and the nginx rate limit is
-  the only protection.
+- No login. Anyone with the link can place orders, and the nginx rate limit is the only
+  protection.
 - One Kafka broker on one machine, with every topic at replication factor 1. If the server
   goes down, so does everything.
 - Sent outbox rows and `processed_messages` are never cleaned up. Fine for a demo that resets
