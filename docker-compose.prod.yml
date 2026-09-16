@@ -5,7 +5,7 @@
 # only the dashboard is published. kafka, the databases and the services stay on the
 # docker network and cannot be reached from outside
 
-name: order-saga
+name: sagaflow
 
 x-java-env: &java-env
   # keeps the heap inside the memory limit below instead of sizing off the whole machine

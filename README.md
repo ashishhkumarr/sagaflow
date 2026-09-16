@@ -1,6 +1,6 @@
-# order-saga
+# sagaflow
 
-[![build](https://github.com/ashishhkumarr/order-saga/actions/workflows/build.yml/badge.svg)](https://github.com/ashishhkumarr/order-saga/actions/workflows/build.yml)
+[![build](https://github.com/ashishhkumarr/sagaflow/actions/workflows/build.yml/badge.svg)](https://github.com/ashishhkumarr/sagaflow/actions/workflows/build.yml)
 
 An order system split into four Spring Boot services that talk to each other over Kafka.
 Placing an order reserves stock, charges a fake card and sends a notification, and if a
@@ -239,7 +239,7 @@ There is not much stock, so a few visitors would sell everything out. A cron job
 server runs `scripts/reset.sh` every night to clear the orders and put the stock back:
 
 ```
-30 18 * * * cd /home/opc/order-saga && ORDER_DB=order-saga-order-db-1 INVENTORY_DB=order-saga-inventory-db-1 PAYMENT_DB=order-saga-payment-db-1 ./scripts/reset.sh >> /home/opc/reset.log 2>&1
+30 18 * * * cd /home/opc/sagaflow && ORDER_DB=sagaflow-order-db-1 INVENTORY_DB=sagaflow-inventory-db-1 PAYMENT_DB=sagaflow-payment-db-1 ./scripts/reset.sh >> /home/opc/reset.log 2>&1
 ```
 
 18:30 UTC is midnight in India, where the server is.

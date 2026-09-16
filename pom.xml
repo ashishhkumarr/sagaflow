@@ -11,10 +11,10 @@
 	</parent>
 
 	<groupId>dev.ashish</groupId>
-	<artifactId>order-saga</artifactId>
+	<artifactId>sagaflow</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
 	<packaging>pom</packaging>
-	<name>order-saga</name>
+	<name>sagaflow</name>
 
 	<properties>
 		<java.version>21</java.version>

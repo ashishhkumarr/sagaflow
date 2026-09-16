@@ -34,7 +34,7 @@ export default function App() {
   return (
     <div className="page">
       <header>
-        <h1>Order Saga</h1>
+        <h1>Sagaflow</h1>
         <p>
           Four services and four databases, communicating over Kafka. Place an order, then
           click it to see the path it took.

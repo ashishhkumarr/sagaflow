@@ -7,7 +7,7 @@
 set -eu
 
 # names from docker-compose.yml. the prod compose names them differently, so the server
-# passes e.g. ORDER_DB=order-saga-order-db-1
+# passes e.g. ORDER_DB=sagaflow-order-db-1
 ORDER_DB=${ORDER_DB:-order-db}
 INVENTORY_DB=${INVENTORY_DB:-inventory-db}
 PAYMENT_DB=${PAYMENT_DB:-payment-db}
