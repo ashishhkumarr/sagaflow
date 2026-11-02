@@ -3,7 +3,11 @@ import { listOrders, listServices, type Order, type ServiceState } from "./api";
 import { OrderForm } from "./OrderForm";
 import { OrderTable } from "./OrderTable";
 import { Services } from "./Services";
+import { Stats } from "./Stats";
+import { BrandMark, GithubMark } from "./icons";
 import "./App.css";
+
+const repo = "https://github.com/ashishhkumarr/sagaflow";
 
 export default function App() {
   const [orders, setOrders] = useState<Order[]>([]);
@@ -33,14 +37,30 @@ export default function App() {
 
   return (
     <div className="page">
-      <header>
-        <h1>Sagaflow</h1>
-        <p>
-          Four services and four databases, communicating over Kafka. Place an order, then
-          click it to see the path it took.
-        </p>
-        {offline && <p className="error">Cannot reach the order service.</p>}
+      <header className="topbar">
+        <div className="brand">
+          <BrandMark />
+          <div>
+            <h1>Sagaflow</h1>
+            <p className="tagline">
+              An order across four services on Kafka, undone step by step when one fails
+            </p>
+          </div>
+        </div>
+
+        <div className="topbar-right">
+          <span className={offline ? "pulse down" : "pulse"} role="status">
+            <span className="pulse-dot" />
+            {offline ? "Order service unreachable" : "Live"}
+          </span>
+          <a className="ghost-link" href={repo} target="_blank" rel="noreferrer">
+            <GithubMark />
+            Source
+          </a>
+        </div>
       </header>
+
+      <Stats orders={orders} />
 
       <main>
         <div className="column">
