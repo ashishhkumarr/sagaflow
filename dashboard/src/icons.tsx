@@ -1,28 +1,18 @@
 // small inline svgs instead of an icon package. there are only four of them and
 // they all take their colour from the text around them
 
+// the same mark as the favicon, so the tab and the page agree. an s that runs
+// forward in the blue of an order in flight and comes back in the amber of one
+// being undone
 export function BrandMark() {
   return (
-    <svg className="brand-mark" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-      <rect x="1.5" y="1.5" width="21" height="21" rx="6" stroke="currentColor" strokeOpacity="0.35" />
-      {/* the three steps forward */}
-      <circle cx="7" cy="9" r="1.9" fill="currentColor" />
-      <circle cx="12" cy="9" r="1.9" fill="currentColor" fillOpacity="0.65" />
-      <circle cx="17" cy="9" r="1.9" fill="currentColor" fillOpacity="0.4" />
-      {/* and the way back, which is the half the project is actually about */}
-      <path
-        d="M17 14.2c0 1.7-1.5 2.9-3.4 2.9H8.4"
-        stroke="currentColor"
-        strokeWidth="1.5"
-        strokeLinecap="round"
-      />
-      <path
-        d="M10.2 15.3 8.1 17.1l2.1 1.8"
-        stroke="currentColor"
-        strokeWidth="1.5"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      />
+    <svg className="brand-mark" viewBox="0 0 32 32" aria-hidden="true">
+      <rect width="32" height="32" rx="7" fill="var(--surface-2)" />
+      <rect x="0.5" y="0.5" width="31" height="31" rx="6.5" fill="none" stroke="var(--line)" />
+      <g fill="none" strokeWidth="3.6" strokeLinecap="round">
+        <path d="M22 11.2C22 8.6 19.2 7.2 16 7.2S10 8.9 10 11.8c0 3 3 4.1 6 4.8" stroke="var(--wait)" />
+        <path d="M16 16.6c3 .7 6 1.6 6 4s-2.8 4.4-6 4.4-6-1.4-6-4" stroke="var(--warn)" />
+      </g>
     </svg>
   );
 }
