@@ -134,7 +134,14 @@ docker compose up -d
 ```
 
 That brings up Kafka on 9092 and one Postgres per service (5432 order, 5433 inventory,
-5434 payment). Then build and start the four services:
+5434 payment).
+
+If the order service then stops on `role "postgres" does not exist`, there is already a
+Postgres on this machine holding 5432, installed with brew or Postgres.app. Docker still
+takes the port on every other address, so nothing complains about a clash and the service
+quietly talks to the wrong database. Stopping the other Postgres sorts it out.
+
+Then build and start the four services:
 
 ```
 ./mvnw clean package
